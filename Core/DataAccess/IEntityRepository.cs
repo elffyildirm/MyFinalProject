@@ -28,3 +28,10 @@ namespace Core.DataAccess
         // bir classa IEntitty dersek veritabanı görevi görür
     }
 }
+
+namespace Core
+{
+    public interface IDto
+    {
+    }
+}

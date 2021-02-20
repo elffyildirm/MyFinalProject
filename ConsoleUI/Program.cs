@@ -6,19 +6,27 @@ using System;
 namespace ConsoleUI
 {
     class Program
-    {    //SOLID
-         //Open Closed Principle 
+    {   
+    
         static void Main(string[] args)
+
         {
-            ProductManager productManager = new ProductManager(new EfProductDal());  // beni new leyebilmen için hangi veriyöntemiyle çalıştıgımı söylermen lazım diyor. Interface inmemory referansı tutabildiği için 
+            //ProductTest();
+            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+            foreach (var category in categoryManager.GetAll())
+            {
+                Console.WriteLine( category.CategoryName );
+            }
 
-            //in memory ile çözümledik şimdi inmemory ile calısacagız
+        }
 
-            foreach (var product in productManager.GetAll()) 
+        private static void ProductTest()
+        {
+            ProductManager productManager = new ProductManager(new EfProductDal());
+            foreach (var product in productManager.GetByUnitPrice(40, 100))
             {
                 Console.WriteLine(product.ProductName);
             }
         }
-
     }
 }
