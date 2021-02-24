@@ -5,6 +5,7 @@ using DataAccess.Abstract;
 using System;
 using Entities.DTOs;
 using Core.Utilities.Results;
+using Business.Constants;
 
 namespace Business.Concrete
 {
@@ -23,46 +24,59 @@ namespace Business.Concrete
             //business codes
             if (product.ProductName.Length < 2)    //try catch mantıgı gibi
             {
-                return new ErrorResult("Ürün ismi en az 2 karakter olmalı");
+                //magic strings
+                return new ErrorResult(Messages.ProductNameInvalid);
             }
             _productDal.Add(product);
 
-            return new SuccessResult("Ürün Eklendi" );  //bunu yapabilmenin yöntemi constructor eklemektir
+            return new SuccessResult(Messages.ProductAdded );  //bunu yapabilmenin yöntemi constructor eklemektir
         }
 
-        public List<Product> GetAll()
+        public IDataResult <List<Product>> GetAll()
         {
 
             //iş kodları
             //yetkisi var mı? v.s. gibi sorgular sorulur.
+            if (DateTime.Now.Hour ==22)        //her gün saat 22 de ürünleri kapatmak istiyoruz
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            }
 
-
-            return _productDal.GetAll(); // kurallardan geçince bana ürünleri verebilirsin diyor.
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),  Messages.ProductsListed); // kurallardan geçince bana ürünleri verebilirsin diyor.
 
             //NOT business da inmemory entity framework yoktur. businessın bildiği tek sey ı product dal dır
            
            
         }
 
-        public List<Product> GetAllByCategoryId(int id)
+        public IDataResult < List<Product>> GetAllByCategoryId(int id)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);
+            return new SuccessDataResult<List<Product>> (_productDal.GetAll(p => p.CategoryId == id));
         }
 
-        public Product GetById(int productId)
+        public IDataResult < Product> GetById(int productId)
         {
-            return _productDal.Get(p => p.ProductId == productId);
+            return new SuccessDataResult<Product>( _productDal.Get(p=> p.ProductId == productId));
         }
 
-        public List<Product> GetByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max);
+            return new SuccessDataResult<List<Product>>( _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
 
+        IDataResult<List<Product>> IProductService.GetByUnitPrice(decimal min, decimal max)
+        {
+            throw new NotImplementedException();
+        }
+
+        IDataResult<List<ProductDetailDto>> IProductService.GetProductDetails()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
