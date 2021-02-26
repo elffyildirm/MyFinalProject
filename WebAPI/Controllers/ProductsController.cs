@@ -28,15 +28,46 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet]
-        public List <Product> Get()
+        [HttpGet ("getall")]
+        public IActionResult GetAll()
         {
+            //Swagger
             //Dependency chain
           
             var result = _productService.GetAll();    //result bize işlem sonucunu verir varsa mesaj ve data ise datayı verir data result ise data vardır
-            return result.Data;
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+            
              
          //Çözümlemek demek ona bağlı bir sınıfı new lemek demek 
         }
+        [HttpGet("getbyid")]
+        public IActionResult GetById(int id)
+        {
+            var result = _productService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("add")]
+        public IActionResult Add(Product product)
+        {
+            var result = _productService.Add(product);
+            if(result.Success)
+            {
+                return Ok(result);
+                
+            }
+            return BadRequest(result);
+
+            //genellikle silme ve güncelleme için de post kullanılır güncelleme için put silme için delete kullanabilirsin
+        }
+       
     }
 }

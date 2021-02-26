@@ -36,11 +36,11 @@ namespace Business.Concrete
         {
 
             //iş kodları
-            //yetkisi var mı? v.s. gibi sorgular sorulur.
-            //if (DateTime.Now.Hour ==22)        //her gün saat 22 de ürünleri kapatmak istiyoruz
-            //{
-            //    return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
-            //}
+            //yetkisi var mı? v.s.gibi sorgular sorulur.
+            if (DateTime.Now.Hour == 1)        //her gün saat 22 de ürünleri kapatmak istiyoruz
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            }
 
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(),  Messages.ProductsListed); // kurallardan geçince bana ürünleri verebilirsin diyor.
 
