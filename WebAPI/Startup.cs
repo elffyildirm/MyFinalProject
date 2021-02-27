@@ -31,9 +31,10 @@ namespace WebAPI
         {
             //Autofac,Ninject,CastWindsor,StructureMap, LightInject,DryInject... bunlar dot.net projelerinde  kendi için ýos yapýsý yokken bu þekilde çalýþmak isteyenler için ortamlar sunuyor -->IoC Container
             //AOP bir methodun önünde sonunda method hata verdiðinde çalýsan kod parçacýklarý aop mimarisiyle yazýlýr yani business içinde business çalýsýr
+            //Postsharp
             services.AddControllers();
-            services.AddSingleton<IProductService, ProductManager>();   //bana arka planda bir referans oluþtur   //burasý arka planda sizin için new ler //içinde data yoksa singleton yap
-            services.AddSingleton<IProductDal, EfProductDal>();
+            //services.AddSingleton<IProductService, ProductManager>();   //bana arka planda bir referans oluþtur   //burasý arka planda sizin için new ler //içinde data yoksa singleton yap
+            //services.AddSingleton<IProductDal, EfProductDal>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
