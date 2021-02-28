@@ -6,6 +6,10 @@ using System;
 using Entities.DTOs;
 using Core.Utilities.Results;
 using Business.Constants;
+using FluentValidation;
+using Business.ValidationRules.FluentValidation;
+using Core.CrossCuttingConcerns.Validation;
+using Core.Aspects.Autofac.Validation;
 
 namespace Business.Concrete
 {
@@ -18,16 +22,15 @@ namespace Business.Concrete
         {
             _productDal = productDal;
         }
-
+        [ValidationAspect(typeof(ProductValidator))]   //bu yapı gidip parametreyi okuyacak productı bulup ilgili validator u bulup validation yapacak
         public IResult Add(Product product)
         {
-            //business codes
-            if (product.ProductName.Length < 2)    //try catch mantıgı gibi
-            {
-                //magic strings
-                return new ErrorResult(Messages.ProductNameInvalid);
-            }
-            _productDal.Add(product);
+            //business codes    //iş kuralı mesela ehliyettem 70 almışım veya kredi verirken vermeye uygun mu businessta bakılır
+            //validation   //nesnenin uygun olup olmadıgını doğrulamaya denir doğrulama kaç karakter olmalı büyük küçük mü yazılmalı nesnenin yapısıyla milgili seyler validation
+            //loglama kodları çalısacak
+           
+
+         _productDal.Add(product);
 
             return new SuccessResult(Messages.ProductAdded );  //bunu yapabilmenin yöntemi constructor eklemektir
         }
