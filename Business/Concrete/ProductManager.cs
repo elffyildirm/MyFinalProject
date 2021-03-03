@@ -10,6 +10,7 @@ using FluentValidation;
 using Business.ValidationRules.FluentValidation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Aspects.Autofac.Validation;
+using System.Linq;
 
 namespace Business.Concrete
 {
@@ -25,17 +26,22 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]   //bu yapı gidip parametreyi okuyacak productı bulup ilgili validator u bulup validation yapacak
         public IResult Add(Product product)
         {
-            //business codes    //iş kuralı mesela ehliyettem 70 almışım veya kredi verirken vermeye uygun mu businessta bakılır
-            //validation   //nesnenin uygun olup olmadıgını doğrulamaya denir doğrulama kaç karakter olmalı büyük küçük mü yazılmalı nesnenin yapısıyla milgili seyler validation
-            //loglama kodları çalısacak
-           
+            if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            {
+                if (CheckIfProductNameExists(product.ProductName).Success)
+                {
+                    _productDal.Add(product);
 
-         _productDal.Add(product);
+                    return new SuccessResult(Messages.ProductAdded);  //bunu yapabilmenin yöntemi constructor eklemektir
+                }
+            }
 
-            return new SuccessResult(Messages.ProductAdded );  //bunu yapabilmenin yöntemi constructor eklemektir
+            return new ErrorResult();
+            
+            
         }
 
-        public IDataResult <List<Product>> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
 
             //iş kodları
@@ -45,31 +51,65 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
 
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),  Messages.ProductsListed); // kurallardan geçince bana ürünleri verebilirsin diyor.
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed); // kurallardan geçince bana ürünleri verebilirsin diyor.
 
             //NOT business da inmemory entity framework yoktur. businessın bildiği tek sey ı product dal dır
-           
-           
+
+
         }
 
-        public IDataResult < List<Product>> GetAllByCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return new SuccessDataResult<List<Product>> (_productDal.GetAll(p => p.CategoryId == id));
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
-        public IDataResult < Product> GetById(int productId)
+        public IDataResult<Product> GetById(int productId)
         {
-            return new SuccessDataResult<Product>( _productDal.Get(p=> p.ProductId == productId));
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
 
         public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
-            return new SuccessDataResult<List<Product>>( _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        [ValidationAspect(typeof(ProductValidator))]
+        public IResult Update(Product product)
+        {
+            var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(message: Messages.ProductCountOfCategoryError);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)      //categorideki ürün sayısının kurallara uygunlugunu doğrula
+        {
+            //Select count(*) from products where categoryId=1 
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
+            if (result >= 15)
+            {
+                return new ErrorResult( Messages.ProductCountOfCategoryError);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfProductNameExists(string productName)      //categorideki ürün sayısının kurallara uygunlugunu doğrula
+        {
+          
+            var result = _productDal.GetAll(p => p.ProductName == productName).Any();
+            if (result )
+            {
+                return new ErrorResult(message: Messages.ProductNameAlreadyExists);
+            }
+            return new SuccessResult();
         }
 
         IDataResult<List<Product>> IProductService.GetByUnitPrice(decimal min, decimal max)
@@ -82,4 +122,5 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
     }
+
 }
