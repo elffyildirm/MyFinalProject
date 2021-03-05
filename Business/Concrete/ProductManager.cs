@@ -12,6 +12,7 @@ using Core.CrossCuttingConcerns.Validation;
 using Core.Aspects.Autofac.Validation;
 using System.Linq;
 using Core.Utilities.Business;
+using Business.BusinessAspects.Autofac;
 
 namespace Business.Concrete
 {    //bir entitymanager kendisi hariç baska dalı enjekte edemez 
@@ -31,7 +32,7 @@ namespace Business.Concrete
 
         //claim iddia etmek
 
-        //[SecuredOperation("product.add")]
+        [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]   //bu yapı gidip parametreyi okuyacak productı bulup ilgili validator u bulup validation yapacak
         public IResult Add(Product product)
         {   //Aynı isimde ürün eklenemez
