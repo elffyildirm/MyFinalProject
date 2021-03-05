@@ -28,6 +28,10 @@ namespace Business.Concrete
             _categoryService = categoryService;
                  
         }
+
+        //claim iddia etmek
+
+        //[SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]   //bu yapı gidip parametreyi okuyacak productı bulup ilgili validator u bulup validation yapacak
         public IResult Add(Product product)
         {   //Aynı isimde ürün eklenemez
