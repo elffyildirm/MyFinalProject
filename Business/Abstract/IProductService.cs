@@ -16,6 +16,7 @@ namespace Business.Abstract
         IDataResult <Product> GetById(int productId);    //product tek basına bir ürün döndürüyor
         IResult  Add(Product product);    //bir sey döndürmüyor   //yapmaya calıstıgın ekleme isi basarılı TRUE basarısız FALSE result da bool  //void gördüğün yere artık IResult de
         IResult Update(Product product);
+        IResult AddTransactionalTest(Product product);
 
         //GetById de product datanın kendsi
         //data olanları Idataresult yaptık void olanı Iresult yaptık
