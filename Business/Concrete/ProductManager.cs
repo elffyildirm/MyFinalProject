@@ -32,7 +32,7 @@ namespace Business.Concrete
 
         //claim iddia etmek
 
-        [SecuredOperation("product.add,admin")]
+        //[SecuredOperation("product.add,admin")]    //yetkilendirme bunu kapatınca devreye girmez
         [ValidationAspect(typeof(ProductValidator))]   //bu yapı gidip parametreyi okuyacak productı bulup ilgili validator u bulup validation yapacak
         public IResult Add(Product product)
         {   //Aynı isimde ürün eklenemez
@@ -50,6 +50,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.ProductAdded);  //bunu yapabilmenin yöntemi constructor eklemektir
         }
 
+        [CacheAspect]  //key,value
         public IDataResult<List<Product>> GetAll()
         {
             //iş kodları
